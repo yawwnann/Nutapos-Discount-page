@@ -1,7 +1,11 @@
 const STORAGE_KEY = 'dynamic_api_url';
 
 const getBaseUrl = () => {
-    return localStorage.getItem(STORAGE_KEY) || import.meta.env.VITE_API_BASE_URL;
+    let url = localStorage.getItem(STORAGE_KEY) || import.meta.env.VITE_API_BASE_URL;
+    if (url && !url.endsWith('/discounts')) {
+        url = url.replace(/\/$/, '') + '/discounts';
+    }
+    return url;
 };
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
