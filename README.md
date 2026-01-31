@@ -62,51 +62,63 @@ graph TD
 
 *Catatan: Halaman yang aktif dan berfungsi penuh saat ini adalah **Diskon**. Halaman lain menggunakan `GenericView` sebagai placeholder (Coming Soon).*
 
-## Alur Konfigurasi API
+## Mekanisme Dynamic API URL
 
-Aplikasi ini mendukung dua mode API yang disimpan pengaturannya di `localStorage` browser. Ini memungkinkan user untuk berpindah antara data Demo dan data Custom mereka sendiri.
+Fitur ini memungkinkan pengguna untuk mengubah endpoint API secara dinamis tanpa perlu mengubah variabel environment (`.env`) atau melakukan build ulang aplikasi. Mekanisme ini bekerja dengan memanfaatkan `localStorage` browser sebagai penyimpanan prioritas untuk Base URL API.
+
+### Flowchart Alur Kerja
 
 ```mermaid
-sequenceDiagram
-    participant User
-    participant App
-    participant LocalStorage
-    participant API Service
-    
-    User->>App: Buka Halaman Diskon
-    App->>LocalStorage: Cek 'api_config_source'
-    
-    alt Config belum ada (First Time)
-        App->>User: Tampilkan Modal "Konfigurasi API" (Force)
-        User->>App: Pilih "Demo" atau "Custom"
+flowchart TD
+    subgraph Initialization [Inisialisasi API]
+        Start([Start Request]) --> GetConfig{Cek localStorage<br/>'dynamic_api_url'}
+        GetConfig -- Ada --> SetLocal[Gunakan URL dari Storage]
+        GetConfig -- Kosong --> SetEnv[Gunakan import.meta.env.VITE_API_BASE_URL]
         
-        opt Pilih Custom
-            User->>App: Input URL Endpoint
-        end
-        
-        App->>LocalStorage: Simpan 'api_config_source' & 'custom_api_url'
-        App->>API Service: Set Base URL sesuai pilihan
-    else Config sudah ada
-        App->>LocalStorage: Ambil config
-        App->>API Service: Set Base URL
+        SetLocal --> Normalize[/Normalisasi URL<br/>(Hapus trailing slash + tambah '/discounts')/]
+        SetEnv --> Normalize
     end
-    
-    App->>API Service: GET /discounts
-    API Service-->>App: Return Data Diskon
-    App-->>User: Tampilkan Tabel Diskon
-    
-    note over User, App: User dapat mereset config kapan saja via Dropdown Header
+
+    subgraph UserInterface [Interaksi User di UI]
+        UserAction([User Buka Settings]) --> InputAPI[Input URL Baru]
+        InputAPI --> SaveAction[User Klik Simpan]
+        SaveAction --> WriteStorage[localStorage.setItem<br/>'dynamic_api_url']
+        WriteStorage --> Reload[Reload Data / Refresh]
+    end
+
+    subgraph Execution [Eksekusi Request]
+        Normalize --> FetchReq[Fetch HTTP Request]
+        FetchReq --> Response{Response OK?}
+        Response -- Yes --> ProcessData[Proses Data JSON]
+        Response -- No --> ErrorHandler[Throw Error]
+    end
+
+    WriteStorage -.-> |Mempengaruhi Request Selanjutnya| GetConfig
 ```
 
-### Penjelasan Logic API
+### Implementasi Teknis
 
-1.  **LocalStorage Keys**:
-    *   `api_config_source`: Bernilai `'default'` (Demo) atau `'custom'`.
-    *   `custom_api_url`: Menyimpan URL endpoint CrudCrud milik user jika memilih custom.
+**1. Service Layer (`api.js`)**
+Logika pemilihan URL terjadi di sini dengan prioritas: `localStorage` > `.env`.
 
-2.  **Service (`api.js`)**:
-    *   Secara dinamis menentukan `BASE_URL` berdasarkan nilai di LocalStorage setiap kali request dibuat.
-    *   Endpoint Demo diambil dari `.env` (`VITE_API_BASE_URL`).
+```javascript
+const STORAGE_KEY = 'dynamic_api_url';
+const getBaseUrl = () => {
+    let url = localStorage.getItem(STORAGE_KEY) || import.meta.env.VITE_API_BASE_URL;
+    // Normalisasi URL: ensure ends with '/discounts'
+    if (url && !url.endsWith('/discounts')) {
+        url = url.replace(/\/$/, '') + '/discounts';
+    }
+    return url;
+};
+```
+
+**2. Penyimpanan Browser**
+*   **Key**: `dynamic_api_url`
+*   **Value**: URL endpoint (contoh: `https://crudcrud.com/api/your-id`)
+
+### Panduan Reset
+Jika terjadi kesalahan input URL, user dapat mereset konfigurasi melalui tombol **Reset** pada UI, yang akan menghapus key `dynamic_api_url` dari localStorage dan mengembalikan aplikasi ke URL default dari `.env`.
 
 ## Cara Menjalankan Project
 
