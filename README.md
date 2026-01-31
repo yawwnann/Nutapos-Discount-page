@@ -70,30 +70,31 @@ Fitur ini memungkinkan pengguna untuk mengubah endpoint API secara dinamis tanpa
 
 ```mermaid
 flowchart TD
-    subgraph Initialization [Inisialisasi API]
-        Start([Start Request]) --> GetConfig{Cek localStorage<br/>'dynamic_api_url'}
-        GetConfig -- Ada --> SetLocal[Gunakan URL dari Storage]
-        GetConfig -- Kosong --> SetEnv[Gunakan import.meta.env.VITE_API_BASE_URL]
+    subgraph Initialization ["Inisialisasi API"]
+        Start(["Start Request"]) --> GetConfig{"Cek localStorage<br/>dynamic_api_url"}
+        GetConfig -- "Ada" --> SetLocal["Gunakan URL dari Storage"]
+        GetConfig -- "Kosong" --> SetEnv["Gunakan import.meta.env.VITE_API_BASE_URL"]
         
-        SetLocal --> Normalize[/Normalisasi URL<br/>(Hapus trailing slash + tambah '/discounts')/]
+        SetLocal --> Normalize["Normalisasi URL<br/>(Hapus trailing slash + tambah /discounts)"]
         SetEnv --> Normalize
     end
 
-    subgraph UserInterface [Interaksi User di UI]
-        UserAction([User Buka Settings]) --> InputAPI[Input URL Baru]
-        InputAPI --> SaveAction[User Klik Simpan]
-        SaveAction --> WriteStorage[localStorage.setItem<br/>'dynamic_api_url']
-        WriteStorage --> Reload[Reload Data / Refresh]
+    subgraph UserInterface ["Interaksi User di UI"]
+        UserAction(["User Buka Settings"]) --> InputAPI["Input URL Baru"]
+        InputAPI --> SaveAction["User Klik Simpan"]
+        SaveAction --> WriteStorage["localStorage.setItem<br/>dynamic_api_url"]
+        WriteStorage --> Reload["Reload Data / Refresh"]
     end
 
-    subgraph Execution [Eksekusi Request]
-        Normalize --> FetchReq[Fetch HTTP Request]
-        FetchReq --> Response{Response OK?}
-        Response -- Yes --> ProcessData[Proses Data JSON]
-        Response -- No --> ErrorHandler[Throw Error]
+    subgraph Execution ["Eksekusi Request"]
+        Normalize --> FetchReq["Fetch HTTP Request"]
+        FetchReq --> Response{"Response OK?"}
+        Response -- "Yes" --> ProcessData["Proses Data JSON"]
+        Response -- "No" --> ErrorHandler["Throw Error"]
     end
 
-    WriteStorage -.-> |Mempengaruhi Request Selanjutnya| GetConfig
+    WriteStorage -.->|"Mempengaruhi Request Selanjutnya"| GetConfig
+
 ```
 
 ### Implementasi Teknis
