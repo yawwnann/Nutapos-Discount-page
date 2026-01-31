@@ -6,23 +6,20 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 
-// Build menu items dynamically from router options
 const menuItems = ref([]);
 
 watchEffect(() => {
   if (router && router.options && router.options.routes) {
     menuItems.value = router.options.routes
-      .filter(r => !r.meta?.hidden) // Exclude hidden routes
+      .filter(r => !r.meta?.hidden) 
       .map(r => {
         const children = r.children?.map(child => ({
           label: child.name,
-          // Ensure child route is properly formatted relative to parent
           route: r.path !== '/' 
             ? `${r.path}/${child.path}`.replace('//', '/') 
             : `/${child.path}`, 
         })) || [];
 
-        // Check if this parent or any child is currently active
         const isActive = r.children 
           ? route.path.startsWith(r.path)   
           : route.path === r.path;
@@ -34,7 +31,6 @@ watchEffect(() => {
           badge: r.meta?.badge,
           badgeColor: r.meta?.badgeColor || 'bg-blue-100 text-blue-500', 
           children,
-          // Initialize Open state based on active route match
           isOpen: isActive
         };
       });

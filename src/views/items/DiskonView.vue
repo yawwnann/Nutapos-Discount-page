@@ -208,7 +208,7 @@ const saveDiscount = async () => {
     // Unique Name Validation (Client-side, current page only)
     const isDuplicate = discounts.value.some(d => {
       if (isEditMode.value && d._id === editingId.value) return false;
-      return d.name.toLowerCase() === formData.name.toLowerCase();
+      return (d.name || '').toLowerCase() === (formData.name || '').toLowerCase();
     });
 
     if (isDuplicate) {
@@ -298,8 +298,8 @@ const confirmDelete = async () => {
 
 const selectedDiscountNames = computed(() => {
   return discounts.value
-    .filter(d => selectedItems.value.includes(d._id))
-    .map(d => d.name)
+    .filter(d => d && d._id && selectedItems.value.includes(d._id))
+    .map(d => d.name || 'Unnamed')
     .join(', ');
 });
 

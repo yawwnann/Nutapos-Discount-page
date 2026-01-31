@@ -8,7 +8,3 @@
 import MainLayout from './layouts/MainLayout.vue';
 </script>
 
-<style>
-/* Global overrides if strictly necessary */
-</style>
-

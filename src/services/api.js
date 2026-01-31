@@ -1,23 +1,19 @@
 const STORAGE_KEY = 'dynamic_api_url';
-// import { useToast } from '../composables/useToast'; // Removed unused import
 
 const getBaseUrl = () => {
     return localStorage.getItem(STORAGE_KEY) || import.meta.env.VITE_API_BASE_URL;
 };
 
-// Helper to simulate slight delay if needed, although fetch has its own latency
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 
 export const api = {
-  // Store the URL save helper here or just let the view handle localStorage.
-  // The view will write to localStorage, this service reads it.
 
   async getDiscounts(page = 1, limit = 10, search = '', sortBy = 'createdAt', sortOrder = 'desc') {
     const baseUrl = getBaseUrl();
     if (!baseUrl) {
         return {
-            success: false,
+            success: true, 
             message: "API URL belum disetting",
             data: [],
             Pagination: { total_data: 0, per_page: limit, current_page: page, total_pages: 0, has_next_page: false, has_prev_page: false }
@@ -32,7 +28,7 @@ export const api = {
       // 1. Filter
       if (search) {
         const lowerSearch = search.toLowerCase();
-        allData = allData.filter(item => item.name.toLowerCase().includes(lowerSearch));
+        allData = allData.filter(item => item && item.name && item.name.toLowerCase().includes(lowerSearch));
       }
 
       // 2. Sort
@@ -106,8 +102,6 @@ export const api = {
         headers: {
           'Content-Type': 'application/json',
         },
-        // We need to add createdAt here because crudcrud doesn't add it automatically like our mock did? 
-        // Actually crudcrud basically just stores JSON. Let's add metadata.
         body: JSON.stringify({
             ...discount,
             createdAt: new Date().toISOString()
@@ -138,19 +132,7 @@ export const api = {
   async updateDiscount(id, updates) {
     const baseUrl = getBaseUrl();
     try {
-      // CrudeCrud PUT replaces the whole object usually, but let's assume standard behavior or just send updates.
-      // CRUDCRUD caveats: PUT /:id replaces the entire entity. To do partial update, we must Fetch -> Merge -> Put.
-      // OR we just assume 'updates' contains everything needed? 
-      // The current frontend implementation passes specific fields.
-      // To be safe with crudcrud, we might need to fetch first if we want to preserve other fields, 
-      // but let's assume the frontend sends the critical data. 
-      // Actually, standard REST PUT replaces. PATCH updates. CrudCrud doesn't strictly support PATCH in all docs, 
-      // but sticking to PUT with the provided data is safest if we don't care about losing hidden fields.
-      // Let's just PUT the updates, but we should probably include createdAt if we want to keep it?
-      // Since it's a demo, let's just PUT.
-
-      // Remove _id from updates if present, crudcrud doesn't like _id in body usually
-      const { _id, ...cleanUpdates } = updates;
+   const { _id, ...cleanUpdates } = updates;
 
       const response = await fetch(`${baseUrl}/${id}`, {
         method: 'PUT', 
@@ -160,13 +142,10 @@ export const api = {
         body: JSON.stringify(cleanUpdates),
       });
       if (!response.ok) throw new Error('Network response was not ok');
-      // CrudCrud PUT returns empty body usually
       return {}; 
     } catch (error) {
       console.error('Error updating discount:', error);
       throw error;
     }
   },
-  
-  // Removed seedMockData as we are using real API
 };

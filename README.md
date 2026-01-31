@@ -182,5 +182,7 @@ Project ini sudah dikonfigurasi untuk deployment di [Netlify](https://www.netlif
 1.  Push code ke GitHub.
 2.  Login ke Netlify -> "Add new site" -> "Import an existing project".
 3.  Pilih repository GitHub ini.
-4.  Netlify akan otomatis mendeteksi setting dari `netlify.toml`.
+4.  **PENTING**: Pada bagian "Site settings" -> "Environment variables", tambahkan variable:
+    - Key: `VITE_API_BASE_URL`
+    - Value: `https://crudcrud.com/api/YOUR_API_KEY` (Gunakan key dari `.env` atau generate baru)
 5.  Klik **Deploy**.

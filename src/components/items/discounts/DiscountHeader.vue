@@ -57,7 +57,7 @@ const handleApiUrlInput = (e) => {
         >
           Batalkan
         </Button>
-        <Button 
+        <Button   
           variant="danger"
           class="!bg-red-500 hover:!bg-red-600 !text-white !font-semibold !px-6 !border-none"
           @click="$emit('bulkDelete')"
