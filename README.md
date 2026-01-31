@@ -2,7 +2,7 @@
 
 Proyek ini adalah implementasi frontend untuk manajemen diskon dengan fitur konfigurasi API yang fleksibel (Demo vs Custom).
 
-## 🛠️ Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 Berikut adalah tech stack dan library utama yang digunakan dalam proyek ini:
 
@@ -13,7 +13,7 @@ Berikut adalah tech stack dan library utama yang digunakan dalam proyek ini:
 - **Icons**: [Iconify](https://iconify.design/) (`@iconify/vue`) - Menggunakan Material Symbols.
 - **State Management**: Reactivity API (ref, reactive, computed) dari Vue core.
 
-## 🗺️ Sitemap
+## Sitemap
 
 Struktur navigasi aplikasi digambarkan dalam diagram berikut:
 
@@ -62,7 +62,7 @@ graph TD
 
 *Catatan: Halaman yang aktif dan berfungsi penuh saat ini adalah **Diskon**. Halaman lain menggunakan `GenericView` sebagai placeholder (Coming Soon).*
 
-## 🔌 Alur Konfigurasi API
+## Alur Konfigurasi API
 
 Aplikasi ini mendukung dua mode API yang disimpan pengaturannya di `localStorage` browser. Ini memungkinkan user untuk berpindah antara data Demo dan data Custom mereka sendiri.
 
@@ -108,7 +108,7 @@ sequenceDiagram
     *   Secara dinamis menentukan `BASE_URL` berdasarkan nilai di LocalStorage setiap kali request dibuat.
     *   Endpoint Demo diambil dari `.env` (`VITE_API_BASE_URL`).
 
-## 🚀 Cara Menjalankan Project
+## Cara Menjalankan Project
 
 ### Prasyarat
 *   Node.js (v18+)
@@ -130,9 +130,44 @@ sequenceDiagram
     npm run build
     ```
 
-## 📁 Struktur Project Utama
+## Struktur File Project
 
-*   `src/components/items/discounts/`: Komponen spesifik fitur Diskon (Table, Header, Modal, Pagination).
-*   `src/views/items/DiskonView.vue`: Halaman utama Diskon (Logic Controller).
-*   `src/services/api.js`: Centralized API service wrapper (Axios).
-*   `src/views/GenericView.vue`: Halaman 404/Coming Soon yang dinamis.
+Berikut adalah struktur direktori mendetail dari source code frontend:
+
+```
+frontend/
+├── public/                 # File statis publik (favicon)
+├── src/
+│   ├── assets/             # Asset gambar dan media
+│   │   ├── favicon/
+│   │   └── 404notFound.png
+│   ├── components/         # Komponen Vue reusable
+│   │   ├── common/         # Komponen umum (Button, Modal, Toast)
+│   │   └── items/
+│   │       └── discounts/  # Komponen fitur diskon
+│   │           ├── ApiSetupModal.vue       # Modal konfigurasi awal API
+│   │           ├── DiscountHeader.vue      # Header halaman diskon (Search, Filter, Reset API)
+│   │           ├── DiscountTable.vue       # Tabel data diskon
+│   │           ├── DiscountModal.vue       # Form tambah/edit diskon
+│   │           ├── DiscountEmptyState.vue  # Tampilan saat data kosong
+│   │           └── DiscountPagination.vue  # Kontrol pagination
+│   ├── composables/        # Logic composition reuse
+│   │   └── useToast.js     # Composable untuk notifikasi toast
+│   ├── layouts/            # Layout utama aplikasi
+│   │   ├── MainLayout.vue  # Wrapper layout (Sidebar + AppBar + Content)
+│   │   └── components/     # Komponen layout (Sidebar, AppBar, Footer)
+│   ├── router/
+│   │   └── index.js        # Definisi route Vue Router
+│   ├── services/
+│   │   └── api.js          # Konfigurasi Axios dan API wrapper
+│   ├── views/              # Halaman-halaman (Page Views)
+│   │   ├── GenericView.vue # Halaman 404/Coming Soon dynamic
+│   │   └── items/
+│   │       └── DiskonView.vue # Controller halaman Diskon utama
+│   ├── App.vue             # Root component
+│   └── main.js             # Entry point aplikasi
+├── index.html              # Template HTML utama
+├── tailwind.config.js      # Konfigurasi Tailwind (jika tidak via vite plugin)
+├── vite.config.js          # Konfigurasi Vite
+└── package.json            # Manifest project dan dependencies
+```
