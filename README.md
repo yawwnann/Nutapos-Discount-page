@@ -16,7 +16,7 @@ Berikut adalah tech stack dan library utama yang digunakan dalam proyek ini:
 ## Sitemap
 
 Struktur navigasi aplikasi digambarkan dalam diagram berikut:
-
+  
 ```mermaid
 graph TD
     A[Dashboard] --> B{Items}
@@ -169,5 +169,18 @@ frontend/
 ├── index.html              # Template HTML utama
 ├── tailwind.config.js      # Konfigurasi Tailwind (jika tidak via vite plugin)
 ├── vite.config.js          # Konfigurasi Vite
-└── package.json            # Manifest project dan dependencies
-```
+
+## Deployed on Netlify
+
+Project ini sudah dikonfigurasi untuk deployment di [Netlify](https://www.netlify.com/).
+
+### Konfigurasi Tersedia
+*   `netlify.toml`: Mengatur build command (`npm run build`) dan publish directory (`dist`).
+*   `public/_redirects`: Menangani SPA Routing (Vue Router) agar tidak 404 saat refresh di halaman selain root.
+
+### Cara Deploy
+1.  Push code ke GitHub.
+2.  Login ke Netlify -> "Add new site" -> "Import an existing project".
+3.  Pilih repository GitHub ini.
+4.  Netlify akan otomatis mendeteksi setting dari `netlify.toml`.
+5.  Klik **Deploy**.
